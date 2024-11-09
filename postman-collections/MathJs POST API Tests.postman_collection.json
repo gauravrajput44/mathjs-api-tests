@@ -1,0 +1,319 @@
+{
+	"info": {
+		"_postman_id": "40fa3c43-54f7-4ae0-a4bf-6780ea984d9a",
+		"name": "MathJs POST API Tests",
+		"description": "This collection includes test cases for the `POST` API of the MathsJs service.\n\nThe following test scenarios are covered:\n\n- **Complex Mathematical Operations**: Validate the response code, structure, and ensure the evaluated expression yields the correct value.\n    \n- **Variable Assignment and References**: Verify that variables are assigned and referenced correctly in expressions.\n    \n- **Unit Conversion**: Ensure that unit conversions are accurately performed.\n    \n- **Invalid Expression Handling**: Confirm proper handling of invalid expressions.\n    \n- **Precision Testing**: Check the accuracy of results with varying precision levels.\n    \n\nEach test case is designed to ensure comprehensive coverage of the API's functionality.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39614958"
+	},
+	"item": [
+		{
+			"name": "Critical Test Cases",
+			"item": [
+				{
+					"name": "Complex Mathematical Operations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code should be 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response should have correct structure\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.have.property('result').that.is.an('array');",
+									"    pm.expect(responseJson).to.have.property('error').that.is.null;",
+									"});",
+									"",
+									"pm.test(\"All expressions should be evaluated correctly\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.result).to.have.lengthOf(7);",
+									"    pm.expect(responseJson.result[0]).to.equal('7.8');",
+									"    pm.expect(responseJson.result[1]).to.equal('3.9');",
+									"    pm.expect(responseJson.result[2]).to.equal('2 inch');",
+									"    pm.expect(responseJson.result[3]).to.equal('0.5');",
+									"    pm.expect(responseJson.result[4]).to.equal('3 + 2i');",
+									"    pm.expect(responseJson.result[5]).to.equal('[[-1, 2], [3, 1]]');",
+									"    pm.expect(responseJson.result[6]).to.equal('-7');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expr\": [\n        \"a = 1.2 * (2 + 4.5)\",\n        \"a / 2\",\n        \"5.08 cm in inch\",\n        \"sin(45 deg) ^ 2\",\n        \"9 / 3 + 2i\",\n        \"b = [-1, 2; 3, 1]\",\n        \"det(b)\"\n    ],\n    \"precision\": 14\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Assignment and Reference",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code should be 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Variable assignment and reference should be assigned and calculated correctly\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.result).to.be.an('array');",
+									"    pm.expect(responseJson.result[0]).to.equal('5');",
+									"    pm.expect(responseJson.result[1]).to.equal('10');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expr\": [\n        \"x = 5\",\n        \"x * 2\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unit Conversions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code should be 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Unit conversions should be correct\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.result).to.be.an('array');",
+									"    pm.expect(responseJson.result[0]).to.include('km');",
+									"    pm.expect(responseJson.result[1]).to.include('celsius');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expr\": [\n        \"1000 m to km\",\n        \"100 fahrenheit to celsius\"\n    ],\n    \"precision\": 4\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Major Test Cases",
+			"item": [
+				{
+					"name": "Invalid Expression In Array",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code should be 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Error handling for invalid expression should be handled appropriately\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.result).to.be.null;",
+									"    pm.expect(responseJson.error).to.be.a('string');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expr\": [\n        \"2 + 2\",\n        \"invalid * expression\",\n        \"3 * 4\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Precision Testing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code should be 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Precision should be applied correctly\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    const expectedPrecision = 14; // This should match the precision in your request",
+									"    ",
+									"    responseJson.result.forEach(function(result, index) {",
+									"        // Skip if the result contains complex numbers (contains 'i')",
+									"        if (!result.includes('i')) {",
+									"            // Remove non-significant characters (decimal points, negative signs, leading zeros)",
+									"            const significantDigits = result",
+									"                .replace(/^0+|[.-]/g, '')  // Remove leading zeros, decimal points, and negative signs",
+									"                .length;",
+									"            ",
+									"            // Create detailed error message",
+									"            const errorMessage = `Value \"${result}\" at index ${index} has ${significantDigits} significant digits, expected <= ${expectedPrecision}`;",
+									"            ",
+									"            // Assert the precision",
+									"            pm.expect(significantDigits, errorMessage).to.be.at.most(expectedPrecision);",
+									"        }",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "content-type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expr\": [\n        \"1/3\",\n        \"pi\",\n        \"e\"\n    ],\n    \"precision\": 14\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/v4",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"v4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://api.mathjs.org/v4",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,136 @@
+{
+	"info": {
+		"_postman_id": "2fe7e51a-9be8-478b-bb8a-bb6acacb652a",
+		"name": "MathJs GET API Tests With CSV Data",
+		"description": "This collection contains test cases for the `GET` API of the MathsJs service.\n\nThe tests are executed using multiple data sets provided in the `get_api_test_data.csv` file. The following scenarios are covered:\n\n- **Performance**: Ensures that the response time is consistently under 1 second.\n    \n- **Data Validation**: Verifies that the response status code and data match the expected values defined in `get_api_test_data.csv`.\n    \n- **Error Handling**: Confirms correct handling of error cases.\n    \n\nEach test scenario uses varied inputs from `get_api_test_data.csv` to ensure comprehensive coverage.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39614958"
+	},
+	"item": [
+		{
+			"name": "GET Endpoint with CSV Data",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Get current data row from CSV",
+							"const expression = pm.iterationData.get('expression');",
+							"const precision = pm.iterationData.get('precision');",
+							"",
+							"// URL encode the expression",
+							"pm.variables.set('encodedExpression', encodeURIComponent(expression));",
+							"",
+							"// Set precision if provided",
+							"if (precision) {",
+							"    pm.variables.set('precisionParam', `&precision=${precision}`);",
+							"} else {",
+							"    pm.variables.set('precisionParam', '');",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Get test data from CSV",
+							"const expectedStatus = parseInt(pm.iterationData.get('status'));",
+							"const expectedResult = pm.iterationData.get('expectedResult');",
+							"const testDescription = pm.iterationData.get('test description');",
+							"",
+							"// Convert the expected result to a number or handle Infinity cases",
+							"let expectedNumericValue;",
+							"if (expectedResult === \"Infinity\") {",
+							"    expectedNumericValue = Infinity;",
+							"} else {",
+							"    expectedNumericValue = parseFloat(expectedResult);",
+							"}",
+							"// Test status code for different data",
+							"pm.test(`${testDescription}: Status code should be ${expectedStatus}`, function () {",
+							"    pm.response.to.have.status(expectedStatus);",
+							"});",
+							"",
+							"// Response time should be under 1 second",
+							"pm.test(\"Response time should be under 1 second\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"// For successful requests, verify the result",
+							"if (expectedStatus === 200) {",
+							"    pm.test(`${testDescription}: Response should match with expected value`, function () {",
+							"        const actualValue = parseFloat(pm.response.text());",
+							"",
+							"        // Check if the expected value is finite or Infinity and compare appropriately",
+							"        if (isFinite(expectedNumericValue)) {",
+							"            pm.expect(actualValue).to.equal(expectedNumericValue);",
+							"        } else {",
+							"            pm.expect(actualValue).to.equal(expectedNumericValue);",
+							"        }",
+							"    });",
+							"} else {",
+							"    // For error cases, verify error response",
+							"    pm.test(`${testDescription}: Error response coode should match with provided status code`, function () {",
+							"        pm.expect(pm.response.text()).to.include('Error');",
+							"    });",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/v4?expr={{encodedExpression}}{{precisionParam}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"v4"
+					],
+					"query": [
+						{
+							"key": "expr",
+							"value": "{{encodedExpression}}{{precisionParam}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://api.mathjs.org",
+			"type": "string"
+		}
+	]
+}
